@@ -5,7 +5,7 @@ from aiogram.filters import CommandStart
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 # ==================== ТВОИ ДАННЫЕ ====================
-TELEGRAM_BOT_TOKEN = "8712306634:AAG18Xtry0hDhGv0fK"
+TELEGRAM_BOT_TOKEN = "8712306634:AAG18XtryOhDLOfMU1Qxv1_uxuT8iPWpNXg"
 GEMINI_API_KEY = "YOUR_GEMINI_KEY"
 # =====================================================
 
