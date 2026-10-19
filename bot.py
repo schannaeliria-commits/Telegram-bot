@@ -4,7 +4,7 @@ from aiogram import Bot, Dispatcher, F, types
 from aiogram.filters import CommandStart
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-8712306634:AAF_plYJuDJscsZbowimVQMtVj5G8ZJxcXo
+TELEGRAM_BOT_TOKEN = "8712306634:AAF_plYJuDJscsZbowimVQMtVj5G8ZJxcXo"
 
 bot = Bot(token=TELEGRAM_BOT_TOKEN)
 dp = Dispatcher()
