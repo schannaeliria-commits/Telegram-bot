@@ -43,7 +43,7 @@ async def crypto_rates(message: types.Message):
                     data = await response.json()
                     btc = data.get("bitcoin", {}).get("usd", "—")
                     eth = data.get("ethereum", {}).get("usd", "—")
-                    ton = data.get("toncoin", {}).get("usd", "—")
+                    ton = data.get("the-open-network", {}).get("usd", "—")
                     text = f"📊 **Актуальные курсы (USD):**\n\n• Bitcoin: ${btc}\n• Ethereum: ${eth}\n• TON: ${ton}"
                 else:
                     text = "Не удалось загрузить курсы, попробуйте чуть позже."
