@@ -5,7 +5,7 @@ from aiogram import Bot, Dispatcher, F, types
 from aiogram.filters import CommandStart
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-TELEGRAM_BOT_TOKEN = TELEGRAM_BOT_TOKEN = os.getenv("BOT_TOKEN")
+TELEGRAM_BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 
 bot = Bot(token=TELEGRAM_BOT_TOKEN)
