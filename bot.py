@@ -87,5 +87,34 @@ async def main():
     await start_web_server()
     await dp.start_polling(bot)
 
+
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+@dp.message(F.text)
+async def ai_assistant(message: types.Message):
+    if not GEMINI_API_KEY:
+        await message.answer("⚠️ Ключ GEMINI_API_KEY не настроен на сервере.")
+        return
+
+    await message.bot.send_chat_action(chat_id=message.chat.id, action="typing")
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+    payload = {
+        "contents": [{
+            "parts": [{
+                "text": f"Ты дружелюбный крипто-помощник для новичков. Ответь кратко, понятно и по делу на вопрос: {message.text}"
+            }]
+        }]
+    }
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, json=payload, timeout=15) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    reply = data["candidates"][0]["content"]["parts"][0]["text"]
+                    await message.answer(reply)
+                else:
+                    await message.answer("⚠️ ИИ сейчас перегружен, попробуйте спросить чуть позже.")
+    except Exception:
+        await message.answer("⚠️ Ошибка связи с нейросетью.")
 if __name__ == "__main__":
     asyncio.run(main())
