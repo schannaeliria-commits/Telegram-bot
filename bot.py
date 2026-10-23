@@ -37,7 +37,8 @@ async def cheat_sheet(message: types.Message):
 
 @dp.message(F.text == "📊 Узнать курсы")
 async def crypto_rates(message: types.Message):
-    url = "https://api.binance.com/api/v3/ticker/price"
+    url = "https://data-api.binance.vision/api/v3/ticker/price"
+
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url, params={"symbols": '["BTCUSDT","ETHUSDT","TONUSDT"]'}, timeout=5) as resp:
