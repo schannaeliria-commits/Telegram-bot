@@ -37,21 +37,25 @@ async def cheat_sheet(message: types.Message):
 
 @dp.message(F.text == "📊 Узнать курсы")
 async def crypto_rates(message: types.Message):
-    url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,toncoin&vs_currencies=usd"
+    url = "https://api.binance.com/api/v3/ticker/price"
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(url, timeout=5) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    btc = data.get("bitcoin", {}).get("usd", "—")
-                    eth = data.get("ethereum", {}).get("usd", "—")
-                    ton = data.get("the-open-network", {}).get("usd", "—")
-                    text = f"📊 **Актуальные курсы (USD):**\n\n• Bitcoin: ${btc}\n• Ethereum: ${eth}\n• TON: ${ton}"
+            async with session.get(url, params={"symbols": '["BTCUSDT","ETHUSDT","TONUSDT"]'}, timeout=5) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    prices = {item['symbol']: float(item['price']) for item in data}
+                    text = (
+                        "📊 **Актуальные курсы криптовалют:**\n\n"
+                        f"• **Bitcoin (BTC):** `${prices.get('BTCUSDT', 0):,.2f}`\n"
+                        f"• **Ethereum (ETH):** `${prices.get('ETHUSDT', 0):,.2f}`\n"
+                        f"• **Toncoin (TON):** `${prices.get('TONUSDT', 0):,.2f}`\n"
+                    )
+                    await message.answer(text, parse_mode="Markdown")
                 else:
-                    text = "Не удалось загрузить курсы, попробуйте чуть позже."
-    except Exception:
-        text = "Ошибка при получении котировок."
-    await message.answer(text, parse_mode="Markdown")
+                    await message.answer("⚠️ Не удалось получить курсы. Попробуйте позже.")
+    except Exception as e:
+        await message.answer("⚠️ Ошибка соединения с биржей.")
+
 
 @dp.message(F.text == "📰 Свежие крипто-новости")
 async def crypto_news(message: types.Message):
