@@ -82,13 +82,7 @@ async def start_web_server():
     port = int(os.environ.get("PORT", 8080))
     site = web.TCPSite(runner, "0.0.0.0", port)
     await site.start()
-
-async def main():
-    await start_web_server()
-    await dp.start_polling(bot)
-
-
-    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 @dp.message(F.text)
 async def ai_assistant(message: types.Message):
@@ -117,4 +111,10 @@ async def ai_assistant(message: types.Message):
     except Exception:
         await message.answer("⚠️ Ошибка связи с нейросетью.")
 if __name__ == "__main__":
+async def main():
+    await start_web_server()
+    await dp.start_polling(bot)
+
+
+    
     asyncio.run(main())
