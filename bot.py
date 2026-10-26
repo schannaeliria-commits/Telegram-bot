@@ -110,10 +110,11 @@ async def ai_assistant(message: types.Message):
                     await message.answer("⚠️ ИИ сейчас перегружен, попробуйте спросить чуть позже.")
     except Exception:
         await message.answer("⚠️ Ошибка связи с нейросетью.")
-if __name__ == "__main__":
 async def main():
     await start_web_server()
     await dp.start_polling(bot)
+
+if __name__ == "__main__":
 
 
     
