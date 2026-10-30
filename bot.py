@@ -86,30 +86,56 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 @dp.message(F.text)
 async def ai_assistant(message: types.Message):
+    # Проверяем наличие ключа API
     if not GEMINI_API_KEY:
         await message.answer("⚠️ Ключ GEMINI_API_KEY не настроен на сервере.")
         return
 
+    # Показываем статус "печатает..." в чате
     await message.bot.send_chat_action(chat_id=message.chat.id, action="typing")
+    
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
-    payload = {
-        "contents": [{
-            "parts": [{
-                "text": f"Ты дружелюбный крипто-помощник для новичков. Ответь кратко, понятно и по делу на вопрос: {message.text}"
-            }]
-        }]
+    
+    headers = {
+        "Content-Type": "application/json"
     }
+
+    payload = {
+        "contents": [
+            {
+                "parts": [
+                    {
+                        "text": f"Ты дружелюбный крипто-помощник для новичков. Ответь кратко, понятно и по делу на сообщение пользователя: {message.text}"
+                    }
+                ]
+            }
+        ]
+    }
+    
     try:
-        async with aiohttp.ClientSession() as session:
-            async with session.post(url, json=payload, timeout=15) as resp:
+        # Устанавливаем тайм-аут 20 секунд на случай задержек сети
+        timeout = aiohttp.ClientTimeout(total=20)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.post(url, json=payload, headers=headers) as resp:
                 if resp.status == 200:
                     data = await resp.json()
-                    reply = data["candidates"][0]["content"]["parts"][0]["text"]
-                    await message.answer(reply)
+                    try:
+                        reply = data["candidates"][0]["content"]["parts"][0]["text"]
+                        await message.answer(reply)
+                    except (KeyError, IndexError):
+                        # Срабатывает, если ответ был заблокирован фильтрами контента
+                        await message.answer("⚠️ Не удалось сформировать ответ, попробуйте переформулировать вопрос.")
                 else:
-                    await message.answer("⚠️ ИИ сейчас перегружен, попробуйте спросить чуть позже.")
-    except Exception:
+                    error_text = await resp.text()
+                    print(f"Ошибка Gemini API {resp.status}: {error_text}")
+                    await message.answer("⚠️ ИИ сейчас перегружен, попробуйте позже.")
+    except asyncio.TimeoutError:
+        print("Ошибка: Превышено время ожидания ответа от Gemini API")
+        await message.answer("⚠️ Сервер нейросети отвечает слишком долго. Попробуйте еще раз.")
+    except Exception as e:
+        print(f"Ошибка связи: {e}")
         await message.answer("⚠️ Ошибка связи с нейросетью.")
+
 async def main():
     await start_web_server()
     await dp.start_polling(bot)
