@@ -114,8 +114,8 @@ async def ai_assistant(message: types.Message):
     }
     
     try:
-        # Устанавливаем тайм-аут 20 секунд на случай задержек сети
-        timeout = aiohttp.ClientTimeout(total=20)
+        # Устанавливаем тайм-аут 57 секунд на случай задержек сети
+        timeout = aiohttp.ClientTimeout(total=57)
         async with aiohttp.ClientSession(timeout=timeout) as session:
             async with session.post(url, json=payload, headers=headers) as resp:
                 if resp.status == 200:
